@@ -10,4 +10,6 @@ VALUE get_random(size_t size);
 /* necessary to avoid copy-on-write weirdness */
 VALUE dup_string(VALUE str);
 
+void* malloc_or_raise(size_t len) __attribute__((malloc));
+
 #endif

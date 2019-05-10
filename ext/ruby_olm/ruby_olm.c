@@ -1,12 +1,14 @@
 #include <ruby.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "olm/olm.h"
 
 void account_init(void);
 void session_init(void);
 void utility_init(void);
+void pk_init(void);
 
 static VALUE get_olm_version(VALUE self)
 {
@@ -33,6 +35,7 @@ void Init_ruby_olm(void)
     account_init();
     session_init();
     utility_init();
+    pk_init();
 }
 
 void raise_olm_error(const char *error)
@@ -48,4 +51,12 @@ VALUE get_random(size_t size)
 VALUE dup_string(VALUE str)
 {
     return rb_str_new(RSTRING_PTR(str), RSTRING_LEN(str));
+}
+
+void* malloc_or_raise(size_t len) {
+    void * ptr = malloc(len);
+    if (ptr == NULL) {
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+    return ptr;
 }

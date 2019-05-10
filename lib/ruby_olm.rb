@@ -5,6 +5,7 @@ require 'ruby_olm/session'
 require 'ruby_olm/olm_message'
 require 'ruby_olm/message'
 require 'ruby_olm/pre_key_message'
+require 'ruby_olm/pk/message'
 
 module RubyOlm
 end
