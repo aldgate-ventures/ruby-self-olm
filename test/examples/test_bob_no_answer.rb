@@ -1,15 +1,15 @@
 require 'minitest/autorun'
-require 'ruby_olm'
+require 'self_olm'
 
 class TestExchange < Minitest::Test
 
-  include RubyOlm
-  
+  include SelfOlm
+
   # Alice -> Bob
   # Alice -> Bob
   #
   def test_bob_no_answer
-    
+
     alice = Account.new
     bob = Account.new
 
@@ -28,7 +28,7 @@ class TestExchange < Minitest::Test
     # Alice can encrypt
     encrypted = alice_session.encrypt(alice_msg)
     assert_instance_of PreKeyMessage, encrypted
-    
+
     # Bob can create a session from this first message
     bob_session = bob.inbound_session(encrypted)
 
@@ -39,7 +39,7 @@ class TestExchange < Minitest::Test
     bob_msg = bob_session.decrypt(encrypted)
 
     assert_equal alice_msg, bob_msg
-    
+
     # At this point Bob has received but Alice hasn't
     assert bob_session.has_received?
     refute alice_session.has_received?
@@ -48,15 +48,15 @@ class TestExchange < Minitest::Test
 
     # Alice sends another message before reply from Bob
     alice_msg = "BOB!"
-    
+
     encrypted = alice_session.encrypt(alice_msg)
     assert_instance_of PreKeyMessage, encrypted
 
     # Bob needs to check if this is the same session or a new one
     same_session = bob_session.will_receive? encrypted
-    
+
     assert same_session
 
   end
-  
+
 end

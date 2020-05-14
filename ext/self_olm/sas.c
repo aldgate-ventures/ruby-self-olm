@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <olm/olm.h>
 #include <olm/sas.h>
-#include "ruby_olm.h"
+#include "self_olm.h"
 
 static VALUE set_other_pubkey(VALUE self, VALUE other_public_key);
 
@@ -21,7 +21,7 @@ static const rb_data_type_t olm_sas_type = {
                 .dmark = NULL,
                 .dfree = _free,
                 .dsize = _size,
-                .reserved = {NULL, NULL}
+                .reserved = {NULL}
         },
         .data = NULL,
         .flags = RUBY_TYPED_FREE_IMMEDIATELY
@@ -174,8 +174,8 @@ static VALUE calculate_mac_long_kdf(VALUE self, VALUE message, VALUE info) {
 }
 
 void sas_init(void) {
-    VALUE cRubyOlm = rb_define_module("RubyOlm");
-    VALUE cSAS = rb_define_class_under(cRubyOlm, "SAS", rb_cData);
+    VALUE cSelfOlm = rb_define_module("SelfOlm");
+    VALUE cSAS = rb_define_class_under(cSelfOlm, "SAS", rb_cData);
 
     rb_define_alloc_func(cSAS, _alloc);
 

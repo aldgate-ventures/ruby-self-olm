@@ -2,9 +2,9 @@ require 'rake/testtask'
 require 'rake/extensiontask'
 
 Rake::ExtensionTask.new  do |ext|
-  ext.name = "ruby_olm"
-  ext.ext_dir = "ext/ruby_olm"
-  ext.lib_dir = "lib/ruby_olm"
+  ext.name = "self_olm"
+  ext.ext_dir = "ext/self_olm"
+  ext.lib_dir = "lib/self_olm"
 end
 
 task :test => :compile

@@ -1,7 +1,7 @@
-module RubyOlm
+module SelfOlm
 
   class Session
-  
+
     # @param pickle [String] pickled state
     # @param password [String] password used to encrypt pickled state
     # @return [Session]
@@ -10,7 +10,7 @@ module RubyOlm
     end
 
     alias_method :has_received?, :has_received_message
-    
+
   end
 
 end

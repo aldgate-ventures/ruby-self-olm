@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <olm/pk.h>
 #include <olm/olm.h>
-#include "ruby_olm.h"
+#include "self_olm.h"
 
 static void _free(void *ptr) {
     olm_clear_pk_decryption(ptr);
@@ -19,7 +19,7 @@ static const rb_data_type_t olm_pk_decryption_type = {
                 .dmark = NULL,
                 .dfree = _free,
                 .dsize = _size,
-                .reserved = {NULL, NULL}
+                .reserved = {NULL}
         },
         .data = NULL,
         .flags = RUBY_TYPED_FREE_IMMEDIATELY
@@ -117,8 +117,8 @@ static VALUE private_key(VALUE self) {
     return retval;
 }
 
-void pk_decryption_init(VALUE cRubyOlmPK) {
-    VALUE cDecryption = rb_define_class_under(cRubyOlmPK, "Decryption", rb_cData);
+void pk_decryption_init(VALUE cSelfOlmPK) {
+    VALUE cDecryption = rb_define_class_under(cSelfOlmPK, "Decryption", rb_cData);
 
     rb_define_alloc_func(cDecryption, _alloc);
 
