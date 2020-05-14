@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "sodium.h"
 #include "olm/olm.h"
 
 void account_init(void);
