@@ -1,26 +1,19 @@
 ruby_olm
 ========
 
-A Ruby wrapper for the [olm](https://git.matrix.org/git/olm/) 
-double ratchet implementation from [matrix](https://matrix.org/blog/home/).
-
-This wrapper provides classes and methods that line up with
-the [olm](ext/ruby_olm/ext_lib_olm/olm/include/olm/olm.h) interface, as
-well as a set of helpers and short aliases.
-
-Very much a work in progress.
-
-[![Build Status](https://travis-ci.org/cjhdev/ruby_olm.svg?branch=master)](https://travis-ci.org/cjhdev/ruby_olm)
+A Ruby wrapper for self's fork of olm, a double ratchet implementation from [matrix](https://matrix.org/blog/home/).
 
 ## Installation
 
-The gem name is 'ruby_olm'. The target
+This gem requires selfs fork of olm to be available before installing this gem.
+
+The gem name is 'self_olm'. The target
 needs to be able to build native extensions.
 
 Once installed, require as:
 
 ~~~ ruby
-require 'ruby_olm'
+require 'self_olm'
 ~~~
 
 If using locally (i.e. you check out this repository) you may
@@ -42,9 +35,9 @@ bundle exec rake clean
 Alice wants to send a message to Bob:
 
 ~~~ ruby
-require 'ruby_olm'
+require 'self_olm'
 
-include RubyOlm
+include SelfOlm
 
 alice = Account.new
 bob = Account.new
@@ -88,12 +81,12 @@ assert_instance_of Message, encrypted
 
 alice_msg = alice_session.decrypt(encrypted)
 
-assert_equal alice_msg, bob_msg 
+assert_equal alice_msg, bob_msg
 ~~~
 
-Account and Session instances can be serialised and deserialised 
+Account and Session instances can be serialised and deserialised
 using the `#to_pickle` and `::from_pickle` methods. This is handy
-for saving and restoring state: 
+for saving and restoring state:
 
 ~~~ ruby
 # save
@@ -110,13 +103,6 @@ Session.from_pickle(alice_saved_session)
 ~~~ console
 bundle exec rake test
 ~~~
-
-## Todo
-
-- documentation
-- more testing
-- add support for megolm
-- replace built-in olm crypto with Ruby openssl
 
 ## What is an Olm?
 
