@@ -1,4 +1,5 @@
 #include "olm/olm.h"
+#include "sodium.h"
 #include "self_olm.h"
 
 static VALUE last_error(VALUE self)
@@ -11,7 +12,7 @@ static VALUE last_error(VALUE self)
 
 static VALUE initialize(int argc, VALUE *argv, VALUE self)
 {
-    VALUE pickle, password, opts;
+    VALUE pickle, password, seed, opts;
     size_t size;
     OlmAccount *this;
     Data_Get_Struct(self, OlmAccount, this);
@@ -22,6 +23,7 @@ static VALUE initialize(int argc, VALUE *argv, VALUE self)
 
     pickle = rb_hash_aref(opts, ID2SYM(rb_intern("pickle")));
     password = rb_hash_aref(opts, ID2SYM(rb_intern("password")));
+    seed = rb_hash_aref(opts, ID2SYM(rb_intern("seed")));
 
     if(pickle != Qnil){
 
@@ -46,6 +48,12 @@ static VALUE initialize(int argc, VALUE *argv, VALUE self)
     if(pickle != Qnil){
 
         if(olm_unpickle_account(this, RSTRING_PTR(password), RSTRING_LEN(password), RSTRING_PTR(dup_string(pickle)), RSTRING_LEN(pickle)) == olm_error()){
+
+            raise_olm_error(olm_account_last_error(this));
+        }
+    }
+    if(seed != Qnil){
+        if(olm_create_account_derrived_keys(this, RSTRING_PTR(seed), RSTRING_LEN(seed)) == olm_error()){
 
             raise_olm_error(olm_account_last_error(this));
         }

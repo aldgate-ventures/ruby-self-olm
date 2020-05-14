@@ -1,3 +1,5 @@
+require 'base64'
+
 module SelfOlm
 
   class Account
@@ -7,6 +9,10 @@ module SelfOlm
     # @return [Account]
     def self.from_pickle(pickle, password="")
       Account.new(pickle: pickle, password: password)
+    end
+
+    def self.from_seed(seed)
+      Account.new(seed: Base64.decode64(seed))
     end
 
     def gen_otk(number=1)
