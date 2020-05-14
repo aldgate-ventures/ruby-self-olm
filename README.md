@@ -1,7 +1,9 @@
-ruby_olm
+ruby-self-olm
 ========
 
 A Ruby wrapper for self's fork of olm, a double ratchet implementation from [matrix](https://matrix.org/blog/home/).
+
+Forked from [ruby_olm](github.com/14mRh4X0r/ruby_olm)
 
 ## Installation
 
@@ -39,7 +41,7 @@ require 'self_olm'
 
 include SelfOlm
 
-alice = Account.new
+alice = Account::from_seed("MY_SElF_APP_KEY")
 bob = Account.new
 
 # Alice wants to send a message to Bob
