@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <olm/pk.h>
 #include <olm/olm.h>
-#include "ruby_olm.h"
+#include "self_olm.h"
 
 static void _free(void *ptr) {
     olm_clear_pk_signing(ptr);
@@ -19,7 +19,7 @@ static const rb_data_type_t olm_pk_signing_type = {
                 .dmark = NULL,
                 .dfree = _free,
                 .dsize = _size,
-                .reserved = {NULL, NULL}
+                .reserved = {NULL}
         },
         .data = NULL,
         .flags = RUBY_TYPED_FREE_IMMEDIATELY
@@ -89,8 +89,8 @@ static VALUE sign(VALUE self, VALUE message) {
     return retval;
 }
 
-void pk_signing_init(VALUE cRubyOlmPK) {
-    VALUE cSigning = rb_define_class_under(cRubyOlmPK, "Signing", rb_cData);
+void pk_signing_init(VALUE cSelfOlmPK) {
+    VALUE cSigning = rb_define_class_under(cSelfOlmPK, "Signing", rb_cData);
 
     rb_define_alloc_func(cSigning, _alloc);
 

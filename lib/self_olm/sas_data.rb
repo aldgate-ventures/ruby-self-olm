@@ -1,7 +1,7 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
-class RubyOlm::SAS
+class SelfOlm::SAS
   EMOJI_TABLE = {
     0 => '🐶',
     1 => '🐱',
