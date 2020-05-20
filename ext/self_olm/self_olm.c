@@ -4,11 +4,13 @@
 #include <stdlib.h>
 
 #include "sodium.h"
+#include "self_omemo.h"
 #include "olm/olm.h"
 
 void account_init(void);
 void session_init(void);
 void utility_init(void);
+void group_session_init(void);
 void pk_init(void);
 void sas_init(void);
 
@@ -36,6 +38,7 @@ void Init_self_olm(void)
 
     account_init();
     session_init();
+    group_session_init();
     utility_init();
     pk_init();
     sas_init();
