@@ -1,6 +1,6 @@
 require_relative './sas_data'
 
-class SelfOlm::SAS
+class SelfCrypto::SAS
   METHODS = %i[decimal emoji]
 
   def generate(method, info)

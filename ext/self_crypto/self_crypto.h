@@ -1,5 +1,5 @@
-#ifndef RUBY_OLM_H
-#define RUBY_OLM_H
+#ifndef SELF_CRYPTO_H
+#define SELF_CRYPTO_H
 
 #include <ruby.h>
 

@@ -1,4 +1,4 @@
-module SelfOlm
+module SelfCrypto
 
   VERSION="0.0.1"
 

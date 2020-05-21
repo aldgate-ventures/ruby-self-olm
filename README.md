@@ -1,21 +1,21 @@
 ruby-self-olm
 ========
 
-A Ruby wrapper for self's fork of olm, a double ratchet implementation from [matrix](https://matrix.org/blog/home/).
+Provides end to end group encryption using `self-olm`, a fork of [matrix](https://matrix.org/blog/home/)'s olm, and `self-omemo`
 
-Forked from [ruby_olm](github.com/14mRh4X0r/ruby_olm)
+The original wrapper was forked from [ruby_olm](github.com/14mRh4X0r/ruby_olm)
 
 ## Installation
 
-This gem requires selfs fork of olm to be available before installing this gem.
+This gem requires selfs fork of olm (self-olm) and omemo (self-omemo) to be available before installing this gem.
 
-The gem name is 'self_olm'. The target
+The gem name is 'self_crypto'. The target
 needs to be able to build native extensions.
 
 Once installed, require as:
 
 ~~~ ruby
-require 'self_olm'
+require 'self_crypto'
 ~~~
 
 If using locally (i.e. you check out this repository) you may
@@ -37,9 +37,9 @@ bundle exec rake clean
 Alice wants to send a message to Bob:
 
 ~~~ ruby
-require 'self_olm'
+require 'self_crypto'
 
-include SelfOlm
+include SelfCrypto
 
 alice = Account::from_seed("MY_SElF_APP_KEY")
 bob = Account.new

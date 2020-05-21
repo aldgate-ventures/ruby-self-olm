@@ -1,9 +1,9 @@
 require 'minitest/autorun'
-require 'self_olm'
+require 'self_crypto'
 
 describe "Account" do
 
-  let(:account){ SelfOlm::Account.new }
+  let(:account){ SelfCrypto::Account.new }
 
   # returns cached one-time-keys which have not yet been marked as published
   #
@@ -64,7 +64,7 @@ describe "Account" do
   #
   describe "session factory" do
 
-    let(:remote){ SelfOlm::Account.new }
+    let(:remote){ SelfCrypto::Account.new }
 
     before do
       remote.gen_otk
@@ -73,7 +73,7 @@ describe "Account" do
 
     describe "#outbound_session" do
 
-      it("creates session") { account.outbound_session(remote.ik['curve25519'], remote.otk['curve25519'].values.first).must_be_kind_of SelfOlm::Session }
+      it("creates session") { account.outbound_session(remote.ik['curve25519'], remote.otk['curve25519'].values.first).must_be_kind_of SelfCrypto::Session }
 
     end
 
@@ -82,7 +82,7 @@ describe "Account" do
       let(:remote_session){ remote.outbound_session(account.ik['curve25519'], account.otk['curve25519'].values.first) }
       let(:remote_message){ remote_session.encrypt("hello") }
 
-      it("creates session") { account.inbound_session(remote_message).must_be_kind_of SelfOlm::Session }
+      it("creates session") { account.inbound_session(remote_message).must_be_kind_of SelfCrypto::Session }
 
     end
 
@@ -91,7 +91,7 @@ describe "Account" do
       let(:remote_session){ remote.outbound_session(account.ik['curve25519'], account.otk['curve25519'].values.first) }
       let(:remote_message){ remote_session.encrypt("hello") }
 
-      it("creates session") { account.inbound_session(remote_message, remote.ik['curve25519']).must_be_kind_of SelfOlm::Session }
+      it("creates session") { account.inbound_session(remote_message, remote.ik['curve25519']).must_be_kind_of SelfCrypto::Session }
 
     end
 

@@ -1,12 +1,11 @@
 require 'base64'
 
-module SelfOlm
+module SelfCrypto
 
-  class OlmMessage
+  class GroupMessage
 
     # @param msg [String] base64 or bytes
     def initialize(msg)
-      raise "abstract class" if self.class == OlmMessage
       @value = msg
     end
 

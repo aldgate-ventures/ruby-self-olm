@@ -1,8 +1,8 @@
 #include <ruby.h>
 #include <stdlib.h>
-#include <olm/pk.h>
-#include <olm/olm.h>
-#include "self_olm.h"
+#include <self_olm/pk.h>
+#include <self_olm/olm.h>
+#include "self_crypto.h"
 
 static void _free(void *ptr) {
     olm_clear_pk_encryption(ptr);
@@ -71,7 +71,7 @@ static VALUE encrypt(VALUE self, VALUE plaintext) {
         raise_olm_error(olm_pk_encryption_last_error(this));
     }
 
-    retval = rb_funcall(rb_eval_string("SelfOlm::PK::Message"), rb_intern("new"), 3,
+    retval = rb_funcall(rb_eval_string("SelfCrypto::PK::Message"), rb_intern("new"), 3,
             rb_str_new(ciphertextPtr, ciphertextLen),
             rb_str_new(macPtr, macLen),
             rb_str_new(ephemeralPtr, ephemeralLen));
@@ -83,8 +83,8 @@ static VALUE encrypt(VALUE self, VALUE plaintext) {
     return retval;
 }
 
-void pk_encryption_init(VALUE cSelfOlmPK) {
-    VALUE cEncryption = rb_define_class_under(cSelfOlmPK, "Encryption", rb_cData);
+void pk_encryption_init(VALUE cSelfCryptoPK) {
+    VALUE cEncryption = rb_define_class_under(cSelfCryptoPK, "Encryption", rb_cData);
 
     rb_define_alloc_func(cEncryption, _alloc);
 

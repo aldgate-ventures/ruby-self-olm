@@ -1,8 +1,8 @@
 #include <ruby.h>
 #include <stdlib.h>
-#include <olm/pk.h>
-#include <olm/olm.h>
-#include "self_olm.h"
+#include <self_olm/pk.h>
+#include <self_olm/olm.h>
+#include "self_crypto.h"
 
 static void _free(void *ptr) {
     olm_clear_pk_decryption(ptr);
@@ -117,8 +117,8 @@ static VALUE private_key(VALUE self) {
     return retval;
 }
 
-void pk_decryption_init(VALUE cSelfOlmPK) {
-    VALUE cDecryption = rb_define_class_under(cSelfOlmPK, "Decryption", rb_cData);
+void pk_decryption_init(VALUE cSelfCryptoPK) {
+    VALUE cDecryption = rb_define_class_under(cSelfCryptoPK, "Decryption", rb_cData);
 
     rb_define_alloc_func(cDecryption, _alloc);
 

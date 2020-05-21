@@ -1,13 +1,13 @@
-#include "olm/olm.h"
 #include "sodium.h"
-#include "self_olm.h"
+#include "self_olm/olm.h"
+#include "self_crypto.h"
 
 static VALUE last_error(VALUE self)
 {
     OlmAccount *this;
     Data_Get_Struct(self, OlmAccount, this);
 
-    return rb_funcall(rb_eval_string("SelfOlm::OlmError"), rb_intern("from_string"), 1, rb_str_new2(olm_account_last_error(this)));
+    return rb_funcall(rb_eval_string("SelfCrypto::OlmError"), rb_intern("from_string"), 1, rb_str_new2(olm_account_last_error(this)));
 }
 
 static VALUE initialize(int argc, VALUE *argv, VALUE self)
@@ -196,7 +196,7 @@ static VALUE remove_one_time_keys(VALUE self, VALUE session)
 
 static VALUE outbound_session(VALUE self, VALUE identity_key, VALUE pre_key)
 {
-    return rb_funcall(rb_eval_string("SelfOlm::OutboundSession"), rb_intern("new"), 3, self, identity_key, pre_key);
+    return rb_funcall(rb_eval_string("SelfCrypto::OutboundSession"), rb_intern("new"), 3, self, identity_key, pre_key);
 }
 
 static VALUE inbound_session(int argc, VALUE *argv, VALUE self)
@@ -205,7 +205,7 @@ static VALUE inbound_session(int argc, VALUE *argv, VALUE self)
 
     (void)rb_scan_args(argc, argv, "11", &args[1], &args[2]);
 
-    return rb_class_new_instance(sizeof(args)/sizeof(*args), args, rb_eval_string("SelfOlm::InboundSession"));
+    return rb_class_new_instance(sizeof(args)/sizeof(*args), args, rb_eval_string("SelfCrypto::InboundSession"));
 }
 
 static VALUE to_pickle(int argc, VALUE *argv, VALUE self)
@@ -262,7 +262,7 @@ static VALUE _alloc(VALUE klass)
 
 void account_init(void)
 {
-    VALUE cRubyOLM = rb_define_module("SelfOlm");
+    VALUE cRubyOLM = rb_define_module("SelfCrypto");
     VALUE cAccount = rb_define_class_under(cRubyOLM, "Account", rb_cObject);
 
     rb_define_alloc_func(cAccount, _alloc);

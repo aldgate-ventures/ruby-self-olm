@@ -4,8 +4,8 @@
 #include <stdlib.h>
 
 #include "sodium.h"
+#include "self_olm/olm.h"
 #include "self_omemo.h"
-#include "olm/olm.h"
 
 void account_init(void);
 void session_init(void);
@@ -28,13 +28,13 @@ static VALUE get_olm_version(VALUE self)
     return rb_str_new2(buffer);
 }
 
-void Init_self_olm(void)
+void Init_self_crypto(void)
 {
     rb_require("openssl");
     rb_require("json");
-    rb_require("self_olm/olm_error");
+    rb_require("self_crypto/olm_error");
 
-    rb_define_singleton_method(rb_eval_string("SelfOlm"), "olm_version", get_olm_version, 0);
+    rb_define_singleton_method(rb_eval_string("SelfCrypto"), "olm_version", get_olm_version, 0);
 
     account_init();
     session_init();
@@ -46,7 +46,7 @@ void Init_self_olm(void)
 
 void raise_olm_error(const char *error)
 {
-    rb_funcall(rb_eval_string("SelfOlm::OlmError"), rb_intern("raise_from_string"), 1, rb_str_new2(error));
+    rb_funcall(rb_eval_string("SelfCrypto::OlmError"), rb_intern("raise_from_string"), 1, rb_str_new2(error));
 }
 
 VALUE get_random(size_t size)

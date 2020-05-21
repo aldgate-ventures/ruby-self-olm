@@ -1,5 +1,5 @@
-#include "olm/olm.h"
-#include "self_olm.h"
+#include "self_olm/olm.h"
+#include "self_crypto.h"
 
 static VALUE last_error(VALUE self)
 {
@@ -59,7 +59,7 @@ static VALUE _alloc(VALUE klass)
 
 void utility_init(void)
 {
-    VALUE cRubyOLM = rb_define_module("SelfOlm");
+    VALUE cRubyOLM = rb_define_module("SelfCrypto");
     VALUE cUtility = rb_define_class_under(cRubyOLM, "Utility", rb_cObject);
 
     rb_define_alloc_func(cUtility, _alloc);

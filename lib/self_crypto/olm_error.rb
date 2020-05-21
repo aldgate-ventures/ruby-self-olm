@@ -1,4 +1,4 @@
-module SelfOlm
+module SelfCrypto
 
   module OlmError
 

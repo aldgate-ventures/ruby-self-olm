@@ -1,6 +1,6 @@
 require 'base64'
 
-module SelfOlm
+module SelfCrypto
 
   class Account
 

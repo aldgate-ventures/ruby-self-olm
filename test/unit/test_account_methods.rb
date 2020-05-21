@@ -1,9 +1,9 @@
 require 'minitest/autorun'
-require 'self_olm'
+require 'self_crypto'
 
 class TestAccount < Minitest::Test
 
-  include SelfOlm
+  include SelfCrypto
 
   def setup
     @state = Account.new

@@ -1,8 +1,8 @@
 #include <ruby.h>
 #include <stdlib.h>
-#include <olm/olm.h>
-#include <olm/sas.h>
-#include "self_olm.h"
+#include <self_olm/olm.h>
+#include <self_olm/sas.h>
+#include "self_crypto.h"
 
 static VALUE set_other_pubkey(VALUE self, VALUE other_public_key);
 
@@ -174,8 +174,8 @@ static VALUE calculate_mac_long_kdf(VALUE self, VALUE message, VALUE info) {
 }
 
 void sas_init(void) {
-    VALUE cSelfOlm = rb_define_module("SelfOlm");
-    VALUE cSAS = rb_define_class_under(cSelfOlm, "SAS", rb_cData);
+    VALUE cSelfCrypto = rb_define_module("SelfCrypto");
+    VALUE cSAS = rb_define_class_under(cSelfCrypto, "SAS", rb_cData);
 
     rb_define_alloc_func(cSAS, _alloc);
 

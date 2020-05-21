@@ -1,8 +1,8 @@
 #include <ruby.h>
 #include <stdlib.h>
-#include <olm/pk.h>
-#include <olm/olm.h>
-#include "self_olm.h"
+#include <self_olm/pk.h>
+#include <self_olm/olm.h>
+#include "self_crypto.h"
 
 static void _free(void *ptr) {
     olm_clear_pk_signing(ptr);
@@ -89,8 +89,8 @@ static VALUE sign(VALUE self, VALUE message) {
     return retval;
 }
 
-void pk_signing_init(VALUE cSelfOlmPK) {
-    VALUE cSigning = rb_define_class_under(cSelfOlmPK, "Signing", rb_cData);
+void pk_signing_init(VALUE cSelfCryptoPK) {
+    VALUE cSigning = rb_define_class_under(cSelfCryptoPK, "Signing", rb_cData);
 
     rb_define_alloc_func(cSigning, _alloc);
 

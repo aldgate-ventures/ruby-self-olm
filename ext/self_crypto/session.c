@@ -1,5 +1,5 @@
-#include "olm/olm.h"
-#include "self_olm.h"
+#include "self_olm/olm.h"
+#include "self_crypto.h"
 
 static VALUE last_error(VALUE self)
 {
@@ -53,9 +53,9 @@ static VALUE initialize_outbound(VALUE self, VALUE account, VALUE identity, VALU
 
     size = olm_create_outbound_session_random_length(this);
 
-    if(rb_obj_is_instance_of(account, rb_eval_string("SelfOlm::Account")) != Qtrue){
+    if(rb_obj_is_instance_of(account, rb_eval_string("SelfCrypto::Account")) != Qtrue){
 
-        rb_raise(rb_eTypeError, "account must be an instance of SelfOlm::Account");
+        rb_raise(rb_eTypeError, "account must be an instance of SelfCrypto::Account");
     }
     if(rb_obj_is_kind_of(identity, rb_eval_string("String")) != Qtrue){
 
@@ -91,7 +91,7 @@ static VALUE initialize_inbound(int argc, VALUE *argv, VALUE self)
     OlmAccount *a;
     Data_Get_Struct(account, OlmAccount, a);
 
-    if(rb_obj_is_kind_of(one_time_message, rb_eval_string("SelfOlm::PreKeyMessage")) != Qtrue){
+    if(rb_obj_is_kind_of(one_time_message, rb_eval_string("SelfCrypto::PreKeyMessage")) != Qtrue){
 
         rb_raise(rb_eTypeError, "one_time_message must be kind of PreKeyMessage");
     }
@@ -154,7 +154,7 @@ static VALUE will_receive(int argc, VALUE *argv, VALUE self)
 
     (void)rb_scan_args(argc, argv, "11", &one_time_message, &identity);
 
-    if(rb_obj_is_kind_of(one_time_message, rb_eval_string("SelfOlm::PreKeyMessage")) != Qtrue){
+    if(rb_obj_is_kind_of(one_time_message, rb_eval_string("SelfCrypto::PreKeyMessage")) != Qtrue){
 
         rb_raise(rb_eTypeError, "one_time_message must be kind of PreKeyMessage");
     }
@@ -191,11 +191,11 @@ static VALUE message_type(VALUE self)
 
     if(olm_encrypt_message_type(this) == OLM_MESSAGE_TYPE_PRE_KEY){
 
-        retval = rb_eval_string("SelfOlm::PreKeyMessage");
+        retval = rb_eval_string("SelfCrypto::PreKeyMessage");
     }
     else if(olm_encrypt_message_type(this) == OLM_MESSAGE_TYPE_MESSAGE){
 
-        retval = rb_eval_string("SelfOlm::Message");
+        retval = rb_eval_string("SelfCrypto::Message");
     }
     else{
 
@@ -246,11 +246,11 @@ static VALUE decrypt(VALUE self, VALUE cipher)
     VALUE retval, data;
     Data_Get_Struct(self, OlmSession, this);
 
-    if(rb_obj_is_kind_of(cipher, rb_eval_string("SelfOlm::Message")) == Qtrue){
+    if(rb_obj_is_kind_of(cipher, rb_eval_string("SelfCrypto::Message")) == Qtrue){
 
         type = OLM_MESSAGE_TYPE_MESSAGE;
     }
-    else if(rb_obj_is_kind_of(cipher, rb_eval_string("SelfOlm::PreKeyMessage")) == Qtrue){
+    else if(rb_obj_is_kind_of(cipher, rb_eval_string("SelfCrypto::PreKeyMessage")) == Qtrue){
 
         type = OLM_MESSAGE_TYPE_PRE_KEY;
     }
@@ -342,7 +342,7 @@ static VALUE _alloc(VALUE klass)
 
 void session_init(void)
 {
-    VALUE cRubyOLM = rb_define_module("SelfOlm");
+    VALUE cRubyOLM = rb_define_module("SelfCrypto");
     VALUE cSession = rb_define_class_under(cRubyOLM, "Session", rb_cObject);
     VALUE cSessionOut = rb_define_class_under(cRubyOLM, "OutboundSession", cSession);
     VALUE cSessionIn = rb_define_class_under(cRubyOLM, "InboundSession", cSession);

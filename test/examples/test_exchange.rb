@@ -1,9 +1,9 @@
 require 'minitest/autorun'
-require 'self_olm'
+require 'self_crypto'
 
 class TestExchange < Minitest::Test
 
-  include SelfOlm
+  include SelfCrypto
 
   # Alice -> Bob
   # Alice <- Bob

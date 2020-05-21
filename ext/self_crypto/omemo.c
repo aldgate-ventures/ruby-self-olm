@@ -1,7 +1,7 @@
-#include "olm/olm.h"
-#include "self_omemo.h"
 #include "sodium.h"
-#include "self_olm.h"
+#include "self_olm/olm.h"
+#include "self_omemo.h"
+#include "self_crypto.h"
 
 static VALUE initialize(int argc, VALUE *argv, VALUE self)
 {
@@ -36,11 +36,11 @@ static VALUE add_participant(VALUE self, VALUE identity, VALUE session)
     }
 
     if(
-       rb_obj_is_instance_of(session, rb_eval_string("SelfOlm::Session")) != Qtrue &&
-       rb_obj_is_instance_of(session, rb_eval_string("SelfOlm::InboundSession")) != Qtrue &&
-       rb_obj_is_instance_of(session, rb_eval_string("SelfOlm::OutboundSession")) != Qtrue
+       rb_obj_is_instance_of(session, rb_eval_string("SelfCrypto::Session")) != Qtrue &&
+       rb_obj_is_instance_of(session, rb_eval_string("SelfCrypto::InboundSession")) != Qtrue &&
+       rb_obj_is_instance_of(session, rb_eval_string("SelfCrypto::OutboundSession")) != Qtrue
      ){
-        rb_raise(rb_eTypeError, "session must be an instance of SelfOlm::Session, SelfOlm::InboundSession or SelfOlm::OutboundSession");
+        rb_raise(rb_eTypeError, "session must be an instance of SelfCrypto::Session, SelfCrypto::InboundSession or SelfCrypto::OutboundSession");
     }
 
     omemo_add_group_participant(this, RSTRING_PTR(identity), s);
@@ -81,10 +81,10 @@ static VALUE encrypt(VALUE self, VALUE plaintext)
 
     if(ciphertext_sz == 0) {
         free(ptr);
-        rb_funcall(rb_eval_string("SelfOlm::OmemoError"), rb_intern("raise_from_string"), 1, rb_str_new2("failed to encrypt"));
+        rb_funcall(rb_eval_string("SelfCrypto::OmemoError"), rb_intern("raise_from_string"), 1, rb_str_new2("failed to encrypt"));
     }
 
-    ciphertext = rb_funcall(rb_eval_string("SelfOlm::GroupMessage"), rb_intern("new"), 1, rb_str_new(ptr, ciphertext_sz));
+    ciphertext = rb_funcall(rb_eval_string("SelfCrypto::GroupMessage"), rb_intern("new"), 1, rb_str_new(ptr, ciphertext_sz));
 
     free(ptr);
 
@@ -129,7 +129,7 @@ static VALUE decrypt(VALUE self, VALUE sender, VALUE ciphertext)
 
     if(plaintext_sz == 0) {
         free(ptr);
-        rb_funcall(rb_eval_string("SelfOlm::OmemoError"), rb_intern("raise_from_string"), 1, rb_str_new2("failed to decrypt"));
+        rb_funcall(rb_eval_string("SelfCrypto::OmemoError"), rb_intern("raise_from_string"), 1, rb_str_new2("failed to decrypt"));
     }
 
     plaintext = rb_str_new(ptr, plaintext_sz);
@@ -158,7 +158,7 @@ static VALUE _alloc(VALUE klass)
 
 void group_session_init()
 {
-    VALUE cRubyOLM = rb_define_module("SelfOlm");
+    VALUE cRubyOLM = rb_define_module("SelfCrypto");
     VALUE cGroupSession = rb_define_class_under(cRubyOLM, "GroupSession", rb_cObject);
 
     rb_define_alloc_func(cGroupSession, _alloc);
