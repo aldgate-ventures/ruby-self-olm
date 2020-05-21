@@ -48,9 +48,100 @@ static VALUE add_participant(VALUE self, VALUE identity, VALUE session)
     return identity;
 }
 
+static VALUE encrypt(VALUE self, VALUE plaintext)
+{
+    GroupSession *this;
+    VALUE ciphertext;
+    void *ptr;
+    size_t ciphertext_sz;
+
+    Data_Get_Struct(self, GroupSession, this);
+
+    if(rb_obj_is_kind_of(plaintext, rb_eval_string("String")) != Qtrue){
+        rb_raise(rb_eTypeError, "plaintext must be kind of String");
+    }
+
+    ciphertext_sz = omemo_encrypted_size(this, RSTRING_LEN(plaintext));
+
+    if (ciphertext_sz == 0) {
+        rb_raise(rb_eTypeError, "could not get size of encrypted message");
+    }
+
+    if((ptr = malloc(ciphertext_sz)) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    ciphertext_sz = omemo_encrypt(
+        this,
+        RSTRING_PTR(plaintext),
+        RSTRING_LEN(plaintext),
+        ptr,
+        ciphertext_sz
+    );
+
+    if(ciphertext_sz == 0) {
+        free(ptr);
+        rb_funcall(rb_eval_string("SelfOlm::OmemoError"), rb_intern("raise_from_string"), 1, rb_str_new2("failed to encrypt"));
+    }
+
+    ciphertext = rb_funcall(rb_eval_string("SelfOlm::GroupMessage"), rb_intern("new"), 1, rb_str_new(ptr, ciphertext_sz));
+
+    free(ptr);
+
+    return ciphertext;
+}
+
+static VALUE decrypt(VALUE self, VALUE sender, VALUE ciphertext)
+{
+    GroupSession *this;
+    VALUE plaintext;
+    void *ptr;
+    size_t plaintext_sz;
+
+    Data_Get_Struct(self, GroupSession, this);
+
+    if(rb_obj_is_kind_of(sender, rb_eval_string("String")) != Qtrue){
+        rb_raise(rb_eTypeError, "sender must be kind of String");
+    }
+
+    if(rb_obj_is_kind_of(ciphertext, rb_eval_string("String")) != Qtrue){
+        rb_raise(rb_eTypeError, "ciphertext must be kind of String");
+    }
+
+    plaintext_sz = omemo_decrypted_size(this, RSTRING_PTR(ciphertext), RSTRING_LEN(ciphertext));
+
+    if (plaintext_sz == 0) {
+        rb_raise(rb_eTypeError, "could not get size of decrypted message");
+    }
+
+    if((ptr = malloc(plaintext_sz)) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    plaintext_sz = omemo_decrypt(
+        this,
+        RSTRING_PTR(sender),
+        ptr,
+        plaintext_sz,
+        RSTRING_PTR(ciphertext),
+        RSTRING_LEN(ciphertext)
+    );
+
+    if(plaintext_sz == 0) {
+        free(ptr);
+        rb_funcall(rb_eval_string("SelfOlm::OmemoError"), rb_intern("raise_from_string"), 1, rb_str_new2("failed to decrypt"));
+    }
+
+    plaintext = rb_str_new(ptr, plaintext_sz);
+
+    free(ptr);
+
+    return plaintext;
+}
+
 static void _free(void *ptr)
 {
-    //omemo_destroy_group_session(ptr);
+    omemo_destroy_group_session(ptr);
 }
 
 static VALUE _alloc(VALUE klass)
@@ -74,4 +165,6 @@ void group_session_init()
 
     rb_define_method(cGroupSession, "initialize", initialize, -1);
     rb_define_method(cGroupSession, "add_participant", add_participant, 2);
+    rb_define_method(cGroupSession, "encrypt", encrypt, 1);
+    rb_define_method(cGroupSession, "decrypt", decrypt, 2);
 }
