@@ -1,5 +1,6 @@
 #include "self_olm/olm.h"
 #include "self_crypto.h"
+#include "sodium.h"
 
 static VALUE last_error(VALUE self)
 {
@@ -21,6 +22,77 @@ static VALUE ed25519_verify(VALUE self, VALUE data, VALUE key, VALUE signature)
     }
 
     return retval;
+}
+
+static VALUE ed25519_pk_to_curve25519(VALUE self, VALUE ed25519_pk)
+{
+    VALUE curve25519_sk;
+    void  *pk_ptr, *dec_ptr, *enc_ptr;
+    size_t pk_sz, dec_sz, enc_sz, success;
+
+    if(rb_obj_is_kind_of(ed25519_pk, rb_eval_string("String")) != Qtrue){
+        rb_raise(rb_eTypeError, "ed25519_pk must be kind of String");
+    }
+
+    pk_sz = crypto_sign_publickeybytes();
+
+    if((dec_ptr = malloc(pk_sz)) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    success = sodium_base642bin(
+        dec_ptr,
+        pk_sz,
+        RSTRING_PTR(ed25519_pk),
+        RSTRING_LEN(ed25519_pk),
+        NULL,
+        &dec_sz,
+        NULL,
+        sodium_base64_VARIANT_ORIGINAL_NO_PADDING
+    );
+
+    if(success != 0) {
+        free(dec_ptr);
+        rb_raise(rb_eTypeError, "could not convert ed25519 public key");
+    }
+
+    if((pk_ptr = malloc(pk_sz)) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    success = crypto_sign_ed25519_pk_to_curve25519(
+        pk_ptr,
+        dec_ptr
+    );
+
+    free(dec_ptr);
+
+    if(success != 0) {
+        free(pk_ptr);
+        rb_raise(rb_eTypeError, "could not convert ed25519 public key");
+    }
+
+    enc_sz = sodium_base64_ENCODED_LEN(pk_sz, sodium_base64_VARIANT_ORIGINAL_NO_PADDING);
+
+    if((enc_ptr = malloc(enc_sz)) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    sodium_bin2base64(
+        enc_ptr,
+        enc_sz,
+        pk_ptr,
+        pk_sz,
+        sodium_base64_VARIANT_ORIGINAL_NO_PADDING
+    );
+
+    free(pk_ptr);
+
+    curve25519_sk = rb_str_new(enc_ptr, enc_sz);
+
+    free(enc_ptr);
+
+    return curve25519_sk;
 }
 
 static VALUE sha256(VALUE self, VALUE data)
@@ -60,10 +132,12 @@ static VALUE _alloc(VALUE klass)
 void utility_init(void)
 {
     VALUE cRubyOLM = rb_define_module("SelfCrypto");
+    VALUE cUtil = rb_define_module_under(cRubyOLM, "Util");
     VALUE cUtility = rb_define_class_under(cRubyOLM, "Utility", rb_cObject);
 
     rb_define_alloc_func(cUtility, _alloc);
 
     rb_define_method(cUtility, "sha256", sha256, 1);
     rb_define_method(cUtility, "ed25519_verify", sha256, 3);
+    rb_define_module_function(cUtil, "ed25519_pk_to_curve25519", ed25519_pk_to_curve25519, 1);
 }

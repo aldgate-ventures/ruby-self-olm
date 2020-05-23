@@ -8,6 +8,7 @@ require 'self_crypto/message'
 require 'self_crypto/group_message'
 require 'self_crypto/pre_key_message'
 require 'self_crypto/sas'
+require 'self_crypto/utility'
 
 module SelfCrypto
 end

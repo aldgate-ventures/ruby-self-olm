@@ -81,7 +81,7 @@ static VALUE encrypt(VALUE self, VALUE plaintext)
 
     if(ciphertext_sz == 0) {
         free(ptr);
-        rb_funcall(rb_eval_string("SelfCrypto::OmemoError"), rb_intern("raise_from_string"), 1, rb_str_new2("failed to encrypt"));
+        rb_raise(rb_eTypeError, "failed to encrypt");
     }
 
     ciphertext = rb_funcall(rb_eval_string("SelfCrypto::GroupMessage"), rb_intern("new"), 1, rb_str_new(ptr, ciphertext_sz));
@@ -129,7 +129,7 @@ static VALUE decrypt(VALUE self, VALUE sender, VALUE ciphertext)
 
     if(plaintext_sz == 0) {
         free(ptr);
-        rb_funcall(rb_eval_string("SelfCrypto::OmemoError"), rb_intern("raise_from_string"), 1, rb_str_new2("failed to decrypt"));
+        rb_raise(rb_eTypeError, "failed to decrypt");
     }
 
     plaintext = rb_str_new(ptr, plaintext_sz);
