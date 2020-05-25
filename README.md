@@ -34,70 +34,113 @@ bundle exec rake clean
 
 ## Example
 
-Alice wants to send a message to Bob:
+Setup alice's account:
 
-~~~ ruby
+~~~ruby
+require 'file'
 require 'self_crypto'
 
 include SelfCrypto
 
-alice = Account::from_seed("MY_SElF_APP_KEY")
-bob = Account.new
+# Setup alices account. This should be stored in memory for all communications
 
-# Alice wants to send a message to Bob
-alice_msg = "hi bob"
+if File.exist?('account.pickle')
+  # 1a) if alice's account file exists load the pickle from the file
+  alice = Account.from_pickle(File.read('account.pickle'), STORAGE_KEY)
+else
+  # 1b-i) if create a new account for alice if one doesn't exist already
+  alice = Account.from_seed(ALICES_IDENTITY_KEY)
 
-# Bob generates a one-time-key
-bob.gen_otk
+  # 1b-ii) generate some keys for alice and publish them
+  alice.gen_otk(100)
 
-# Alice must have Bob's identity and one-time-key to make a session
-alice_session = alice.outbound_session(bob.ik['curve25519'], bob.otk['curve25519'].values.first)
+  # 1b-iii) convert those keys to json
+  keys = alice.otk['curve25519'].map{|k,v| {id: k, type: v}}.to_json
 
-# Bob marks all one-time-keys as published
-bob.mark_otk
+  # 1b-iv) post those keys to POST /v1/identities/alice/devices/1/pre_keys/
+  post('/v1/identities/alice/devices/1/pre_keys', keys)
 
-# Alice can encrypt
-encrypted = alice_session.encrypt(alice_msg)
-assert_instance_of PreKeyMessage, encrypted
+  # 1b-v) store the account to a file
+  File.write('account.pickle', alice.to_pickle(STORAGE_KEY))
+end
 
-# Bob can create a session from this first message
-bob_session = bob.inbound_session(encrypted)
-
-# Bob can now update his list of marked otk (since he knows one has been used)
-bob.update_otk(bob_session)
-
-# Bob can decrypt Alice's message
-bob_msg = bob_session.decrypt(encrypted)
-
-assert_equal alice_msg, bob_msg
-
-# At this point Bob has received but Alice hasn't
-assert bob_session.has_received?
-refute alice_session.has_received?
-
-# Bob can send messages back to Alice    
-bob_msg = "hi alice"
-
-encrypted = bob_session.encrypt(bob_msg)
-assert_instance_of Message, encrypted
-
-alice_msg = alice_session.decrypt(encrypted)
-
-assert_equal alice_msg, bob_msg
 ~~~
 
-Account and Session instances can be serialised and deserialised
-using the `#to_pickle` and `::from_pickle` methods. This is handy
-for saving and restoring state:
+Send a message from alice to bob:
 
-~~~ ruby
-# save
-alice_saved_account = Alice.to_pickle
-alice_saved_session = alice_session.to_pickle
+~~~ruby
+# Send a message to bob:1
 
-# restore
-Account.from_pickle(alice_saved_account)
-Session.from_pickle(alice_saved_session)
+if File.exist?('bob:1-session.pickle')
+  # 2a) if bob's session file exists load the pickle from the file
+  session_with_bob = Session.from_pickle(File.read('bob:1-session.pickle'), STORAGE_KEY)
+else
+  # 2b-i) if you have not previously sent or recevied a message to/from bob,
+  #       you must get his identity key from GET /v1/identities/bob/
+  ed25519_identity_key = JSON.parse(get('/v1/identities/bob/public_keys/')).first['key']
+
+  # 2b-ii) get a one time key for bob
+  one_time_key = JSON.parse(get('/v1/identities/bob/devices/1/pre_key'))['key']
+
+  # 2b-iii) convert bobs ed25519 identity key to a curve25519 key
+  curve25519_identity_key = Util.ed25519_pk_to_curve25519(ed25519_identity_key)
+
+  # 2b-iv) create the session with bob
+  session_with_bob = alice.outbound_session(curve25519_identity_key, one_time_key)
+
+  # 2b-v) store the session to a file
+  File.write('bob:1-session.pickle', session_with_bob.to_pickle(STORAGE_KEY))
+end
+
+# 3) create a group session and set the identity of the account youre using
+ags = GroupSession.new('alice:1')
+
+# 4) add all recipients and their sessions
+ags.add_participant('bob:1', session_with_bob)
+
+# 5) encrypt a message
+ct = ags.encrypt('hello')
+
+# 6) do something with the message
+puts ct.to_s
+
+~~~
+
+Receive a message from carol:
+
+~~~ruby
+# Receive a message from carol:1
+
+ct = "json encoded group message..."
+
+if File.exist?('carol:1-session.pickle')
+  # 7a) if carol's session file exists load the pickle from the file
+  session_with_carol = Session.from_pickle(File.read('carol:1-session.pickle'), STORAGE_KEY)
+else
+  # 7b-i) if you have not previously sent or received a message to/from bob,
+  #       you should extract the initial message from the group message intended
+  #       for your account id.
+  m = GroupMessage.new(ct.to_s).get_message('alice:1')
+
+  # 7b-ii) use the initial message to create a session for carol
+  session_with_carol = alice.inbound_session(m)
+
+  # 7b-iii) store the session to a file
+  File.write('carol:1-session.pickle', session_with_carol.to_pickle(STORAGE_KEY))
+end
+
+# 8) create a group session and set the identity of the account you're using
+ags = GroupSession.new('alice:1')
+
+# 9) add all recipients and their sessions
+ags.add_participant('carol:1', session_with_carol)
+
+# 10) decrypt the message ciphertext
+pt = bgs.decrypt("alice:1", ct)
+
+# 11) do something with the message
+puts ct.to_s
+
 ~~~
 
 ## Running Tests
