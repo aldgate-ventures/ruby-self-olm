@@ -1,4 +1,4 @@
-#include "olm/pk.h"
+#include "self_olm/pk.h"
 #include "self_crypto.h"
 
 void pk_encryption_init(VALUE cSelfCryptoPK);
