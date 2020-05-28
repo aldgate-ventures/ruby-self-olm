@@ -1,5 +1,6 @@
 dist: bionic
-language: Ruby
+compiler: gcc
+language: ruby
 
 before_install:
   - curl -O http://download.selfid.net/olm/libself-olm_0.1.14_amd64.deb
