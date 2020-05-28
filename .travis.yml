@@ -1,14 +1,15 @@
-notifications:
-  email: false
+dist: bionic
 language: Ruby
-rvm:
-  - 2.3.0
-  - 2.4.1
-  - 2.5.3
-branches:
-  only:
-    - master
+
+before_install:
+  - curl -O http://download.selfid.net/olm/libself-olm_0.1.14_amd64.deb
+  - curl -O http://download.selfid.net/omemo/libself-omemo_0.1.1_amd64.deb
+  - sudo apt update
+  - sudo apt install libsodium-dev
+  - sudo apt install ./libself-olm_0.1.14_amd64.deb
+  - sudo apt install ./libself-omemo_0.1.1_amd64.deb
+
 script:
   - bundle install
   - bundle exec rake test
-  - gem build ruby_olm.gemspec && gem install self_crypto-*.gem && cd gem_test && rake
+  - gem build self-crypto-ruby.gemspec && gem install self_crypto-*.gem && cd gem_test && rake
