@@ -1,5 +1,7 @@
 require 'mkmf'
 
+RbConfig::MAKEFILE_CONFIG['CC'] = ENV['CC'] if ENV['CC']
+
 pkg_config('self_olm')
 pkg_config('self_omemo')
 pkg_config("sodium")

@@ -138,6 +138,6 @@ void utility_init(void)
     rb_define_alloc_func(cUtility, _alloc);
 
     rb_define_method(cUtility, "sha256", sha256, 1);
-    rb_define_method(cUtility, "ed25519_verify", sha256, 3);
+    rb_define_method(cUtility, "ed25519_verify", ed25519_verify, 3);
     rb_define_module_function(cUtil, "ed25519_pk_to_curve25519", ed25519_pk_to_curve25519, 1);
 }
