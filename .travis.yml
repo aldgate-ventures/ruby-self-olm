@@ -1,6 +1,10 @@
 dist: bionic
-compiler: gcc
 language: ruby
+
+env:
+  - CC = gcc
+  - CXX = g++
+
 
 before_install:
   - curl -O http://download.selfid.net/olm/libself-olm_0.1.14_amd64.deb
@@ -13,4 +17,4 @@ before_install:
 script:
   - bundle install
   - bundle exec rake test
-  - gem build self-crypto-ruby.gemspec && gem install self_crypto-*.gem && cd gem_test && rake
+  - gem build self-crypto-ruby.gemspec && gem install --verbose self_crypto-*.gem && cd gem_test && rake
