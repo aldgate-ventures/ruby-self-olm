@@ -1,6 +1,6 @@
 require 'mkmf'
 
-$CFLAGS << ' -std=c99'
+$CFLAGS = " -std=c99"
 
 RbConfig::MAKEFILE_CONFIG['CC'] = ENV['CC'] if ENV['CC']
 

@@ -1,5 +1,9 @@
 require 'minitest/autorun'
+require 'minitest/reporters'
 require 'self_crypto'
+
+reporter_options = { color: true }
+Minitest::Reporters.use! [Minitest::Reporters::DefaultReporter.new(reporter_options)]
 
 describe "Account" do
 
@@ -9,9 +13,7 @@ describe "Account" do
   #
   describe "#otk" do
 
-    let(:rv){ account.otk['curve25519'] }
-
-    it("returns a Hash"){ rv.must_be_kind_of Hash }
+    it("returns a Hash"){ _(account.otk['curve25519']).must_be_kind_of Hash }
 
     describe "return value" do
 
@@ -19,7 +21,7 @@ describe "Account" do
 
         describe "before #mark_otk" do
 
-          it("is empty"){ rv.size.must_equal 0 }
+          it("is empty"){ _(account.otk['curve25519'].size).must_equal 0 }
 
         end
 
@@ -27,22 +29,20 @@ describe "Account" do
 
           before{ account.mark_otk }
 
-          it("is empty"){ rv.size.must_equal 0 }
+          it("is empty"){ _(account.otk['curve25519'].size).must_equal 0 }
 
         end
 
       end
 
       describe "after #gen_otk" do
+        let(:n){ 100 }
 
-        let(:max){ account.max_otk }
-        let(:n){ rand(0..max) }
-
-        before{ account.gen_otk(n) }
+        before{ p account.max_otk; account.gen_otk(n) }
 
         describe "before #mark_otk" do
 
-          it("has n keys"){ rv.size.must_equal n }
+          it("has n keys"){ p account.one_time_keys_size; p account.otk['curve25519']; _(account.otk['curve25519'].size).must_equal n }
 
         end
 
@@ -50,7 +50,7 @@ describe "Account" do
 
           before{ account.mark_otk }
 
-          it("is empty"){ rv.size.must_equal 0 }
+          it("is empty"){ _(account.otk['curve25519'].size).must_equal 0 }
 
         end
 
@@ -73,7 +73,7 @@ describe "Account" do
 
     describe "#outbound_session" do
 
-      it("creates session") { account.outbound_session(remote.ik['curve25519'], remote.otk['curve25519'].values.first).must_be_kind_of SelfCrypto::Session }
+      it("creates session") { _(account.outbound_session(remote.ik['curve25519'], remote.otk['curve25519'].values.first)).must_be_kind_of SelfCrypto::Session }
 
     end
 
@@ -82,7 +82,7 @@ describe "Account" do
       let(:remote_session){ remote.outbound_session(account.ik['curve25519'], account.otk['curve25519'].values.first) }
       let(:remote_message){ remote_session.encrypt("hello") }
 
-      it("creates session") { account.inbound_session(remote_message).must_be_kind_of SelfCrypto::Session }
+      it("creates session") { _(account.inbound_session(remote_message)).must_be_kind_of SelfCrypto::Session }
 
     end
 
@@ -91,7 +91,7 @@ describe "Account" do
       let(:remote_session){ remote.outbound_session(account.ik['curve25519'], account.otk['curve25519'].values.first) }
       let(:remote_message){ remote_session.encrypt("hello") }
 
-      it("creates session") { account.inbound_session(remote_message, remote.ik['curve25519']).must_be_kind_of SelfCrypto::Session }
+      it("creates session") { _(account.inbound_session(remote_message, remote.ik['curve25519'])).must_be_kind_of SelfCrypto::Session }
 
     end
 

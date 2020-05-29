@@ -104,6 +104,14 @@ static VALUE generate_one_time_keys(VALUE self, VALUE number)
     return self;
 }
 
+static VALUE one_time_keys_size(VALUE self)
+{
+    OlmAccount *this;
+    Data_Get_Struct(self, OlmAccount, this);
+
+    return SIZET2NUM(olm_account_one_time_keys_length(this));
+}
+
 static VALUE one_time_keys(VALUE self)
 {
     VALUE retval;
@@ -114,7 +122,8 @@ static VALUE one_time_keys(VALUE self)
 
     size = olm_account_one_time_keys_length(this);
 
-    if((ptr = malloc(size)) == NULL){
+    // add an additional byte to stop this from overflowing
+    if((ptr = malloc(size+1)) == NULL){
 
         rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
     }
@@ -270,6 +279,7 @@ void account_init(void)
     rb_define_method(cAccount, "initialize", initialize, -1);
     rb_define_method(cAccount, "identity_keys", identity_keys, 0);
     rb_define_method(cAccount, "one_time_keys", one_time_keys, 0);
+    rb_define_method(cAccount, "one_time_keys_size", one_time_keys_size, 0);
     rb_define_method(cAccount, "generate_one_time_keys", generate_one_time_keys, 1);
     rb_define_method(cAccount, "last_error", last_error, 0);
     rb_define_method(cAccount, "sign", sign, 1);
