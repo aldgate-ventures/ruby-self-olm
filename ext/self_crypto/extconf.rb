@@ -1,5 +1,7 @@
 require 'mkmf'
 
+$CFLAGS << ' -std=c99'
+
 RbConfig::MAKEFILE_CONFIG['CC'] = ENV['CC'] if ENV['CC']
 
 pkg_config('self_olm')
