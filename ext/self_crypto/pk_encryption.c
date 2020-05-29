@@ -43,7 +43,7 @@ static VALUE initialize(VALUE self, VALUE recipientKey) {
     return self;
 }
 
-static VALUE encrypt(VALUE self, VALUE plaintext) {
+static VALUE pk_encrypt(VALUE self, VALUE plaintext) {
     OlmPkEncryption *this;
     size_t ciphertextLen, macLen, ephemeralLen, randomLen;
     char *ciphertextPtr, *macPtr, *ephemeralPtr;
@@ -89,5 +89,5 @@ void pk_encryption_init(VALUE cSelfCryptoPK) {
     rb_define_alloc_func(cEncryption, _alloc);
 
     rb_define_method(cEncryption, "initialize", initialize, 1);
-    rb_define_method(cEncryption, "encrypt", encrypt, 1);
+    rb_define_method(cEncryption, "encrypt", pk_encrypt, 1);
 }
