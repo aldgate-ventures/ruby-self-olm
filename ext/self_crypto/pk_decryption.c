@@ -64,7 +64,7 @@ static VALUE initialize(int argc, VALUE *argv, VALUE self) {
     return self;
 }
 
-static VALUE decrypt(VALUE self, VALUE pkMessage) {
+static VALUE pk_decrypt(VALUE self, VALUE pkMessage) {
     OlmPkDecryption *this;
     size_t plaintextLen;
     char *plaintextPtr;
@@ -124,6 +124,6 @@ void pk_decryption_init(VALUE cSelfCryptoPK) {
 
     rb_define_attr(cDecryption, "public_key", 1, 0);
     rb_define_method(cDecryption, "initialize", initialize, -1);
-    rb_define_method(cDecryption, "decrypt", decrypt, 1);
+    rb_define_method(cDecryption, "decrypt", pk_decrypt, 1);
     rb_define_method(cDecryption, "private_key", private_key, 0);
 }
