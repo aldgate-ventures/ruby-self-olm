@@ -11,5 +11,7 @@ before_install:
 
 script:
   - bundle install
-  - gem build self-crypto-ruby.gemspec && gem install self_crypto-*.gem  -- --with-cflags=\"-std=c99\" && cd gem_test && rake
+  - gem build self-crypto-ruby.gemspec
+  - gem install self_crypto-*.gem -- --with-cflags=\"-std=c99\"
   - bundle exec rake test
+  - cd gem_test && rake
