@@ -17,4 +17,4 @@ before_install:
 script:
   - bundle install
   - bundle exec rake test
-  - gem build self-crypto-ruby.gemspec && gem install --verbose self_crypto-*.gem && cd gem_test && rake
+  - gem build self-crypto-ruby.gemspec && CC=gcc gem install --verbose self_crypto-*.gem && cd gem_test && rake
