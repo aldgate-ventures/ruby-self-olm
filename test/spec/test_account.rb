@@ -38,11 +38,11 @@ describe "Account" do
       describe "after #gen_otk" do
         let(:n){ 100 }
 
-        before{ p account.max_otk; account.gen_otk(n) }
+        before{ account.gen_otk(n) }
 
         describe "before #mark_otk" do
 
-          it("has n keys"){ p account.one_time_keys_size; p account.otk['curve25519']; _(account.otk['curve25519'].size).must_equal n }
+          it("has n keys"){ _(account.otk['curve25519'].size).must_equal n }
 
         end
 
