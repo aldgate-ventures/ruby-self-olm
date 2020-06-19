@@ -30,7 +30,6 @@ static VALUE get_olm_version(VALUE self)
 
 void Init_self_crypto(void)
 {
-    rb_require("openssl");
     rb_require("json");
     rb_require("self_crypto/olm_error");
 
@@ -51,7 +50,24 @@ void raise_olm_error(const char *error)
 
 VALUE get_random(size_t size)
 {
-    return rb_funcall(rb_eval_string("OpenSSL::Random"), rb_intern("random_bytes"), 1, SIZET2NUM(size));
+    VALUE rand;
+    void *ptr;
+
+    if (sodium_init() == -1) {
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    if ((ptr = malloc(size)) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    randombytes_buf(ptr, size);
+
+    rand = rb_str_new(ptr, size);
+
+    free(ptr);
+
+    return rand;
 }
 
 VALUE dup_string(VALUE str)
