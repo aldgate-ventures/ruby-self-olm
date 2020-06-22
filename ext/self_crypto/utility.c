@@ -88,7 +88,7 @@ static VALUE ed25519_pk_to_curve25519(VALUE self, VALUE ed25519_pk)
 
     free(pk_ptr);
 
-    curve25519_sk = rb_str_new(enc_ptr, enc_sz);
+    curve25519_sk = rb_str_new_cstr(enc_ptr);
 
     free(enc_ptr);
 
