@@ -205,7 +205,7 @@ static VALUE message_type(VALUE self)
     return retval;
 }
 
-static VALUE encrypt(VALUE self, VALUE plain)
+static VALUE session_encrypt(VALUE self, VALUE plain)
 {
     size_t cipher_size, random_size;
     void *ptr;
@@ -238,7 +238,7 @@ static VALUE encrypt(VALUE self, VALUE plain)
     return retval;
 }
 
-static VALUE decrypt(VALUE self, VALUE cipher)
+static VALUE session_decrypt(VALUE self, VALUE cipher)
 {
     size_t plain_size, plain_max, type;
     void *ptr;
@@ -356,8 +356,8 @@ void session_init(void)
     rb_define_method(cSession, "id", get_session_id, 0);
     rb_define_method(cSession, "last_error", last_error, 0);
     rb_define_method(cSession, "has_received_message", has_received_message, 0);
-    rb_define_method(cSession, "encrypt", encrypt, 1);
-    rb_define_method(cSession, "decrypt", decrypt, 1);
+    rb_define_method(cSession, "encrypt", session_encrypt, 1);
+    rb_define_method(cSession, "decrypt", session_decrypt, 1);
     rb_define_method(cSession, "to_pickle", to_pickle, -1);
     rb_define_method(cSession, "will_receive?", will_receive, -1);
 }

@@ -48,7 +48,7 @@ static VALUE add_participant(VALUE self, VALUE identity, VALUE session)
     return identity;
 }
 
-static VALUE encrypt(VALUE self, VALUE plaintext)
+static VALUE group_encrypt(VALUE self, VALUE plaintext)
 {
     GroupSession *this;
     VALUE ciphertext;
@@ -91,7 +91,7 @@ static VALUE encrypt(VALUE self, VALUE plaintext)
     return ciphertext;
 }
 
-static VALUE decrypt(VALUE self, VALUE sender, VALUE ciphertext)
+static VALUE group_decrypt(VALUE self, VALUE sender, VALUE ciphertext)
 {
     GroupSession *this;
     VALUE plaintext;
@@ -165,6 +165,6 @@ void group_session_init()
 
     rb_define_method(cGroupSession, "initialize", initialize, -1);
     rb_define_method(cGroupSession, "add_participant", add_participant, 2);
-    rb_define_method(cGroupSession, "encrypt", encrypt, 1);
-    rb_define_method(cGroupSession, "decrypt", decrypt, 2);
+    rb_define_method(cGroupSession, "encrypt", group_encrypt, 1);
+    rb_define_method(cGroupSession, "decrypt", group_decrypt, 2);
 }
