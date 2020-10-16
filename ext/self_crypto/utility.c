@@ -48,12 +48,12 @@ static VALUE ed25519_pk_to_curve25519(VALUE self, VALUE ed25519_pk)
         NULL,
         &dec_sz,
         NULL,
-        sodium_base64_VARIANT_ORIGINAL_NO_PADDING
+        sodium_base64_VARIANT_URLSAFE_NO_PADDING
     );
 
     if(success != 0) {
         free(dec_ptr);
-        rb_raise(rb_eTypeError, "could not convert ed25519 public key");
+        rb_raise(rb_eTypeError, "could not decode ed25519 public key");
     }
 
     if((pk_ptr = malloc(pk_sz)) == NULL){
