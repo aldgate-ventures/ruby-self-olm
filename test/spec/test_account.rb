@@ -95,6 +95,16 @@ describe "Account" do
 
     end
 
+    describe "#inbound_session from pickled account" do
+
+      let(:remote_session){ remote.outbound_session(account.ik['curve25519'], account.otk['curve25519'].values.first) }
+      let(:remote_message){ remote_session.encrypt("hello") }
+      let(:pickled_account){ account.to_pickle("test") }
+      let(:unpickled_account){ SelfCrypto::Account.from_pickle(pickled_account, "test") }
+      it("creates session") { _(unpickled_account.inbound_session(remote_message, remote.ik['curve25519'])).must_be_kind_of SelfCrypto::Session 
+
+    end
+
   end
 
 end

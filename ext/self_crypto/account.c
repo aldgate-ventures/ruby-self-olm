@@ -46,24 +46,17 @@ static VALUE initialize(int argc, VALUE *argv, VALUE self)
     }
 
     if(pickle != Qnil){
-
         if(olm_unpickle_account(this, RSTRING_PTR(password), RSTRING_LEN(password), RSTRING_PTR(dup_string(pickle)), RSTRING_LEN(pickle)) == olm_error()){
-
             raise_olm_error(olm_account_last_error(this));
         }
-    }
-    if(seed != Qnil){
+    } else if(seed != Qnil){
         if(olm_create_account_derrived_keys(this, RSTRING_PTR(seed), RSTRING_LEN(seed)) == olm_error()){
-
             raise_olm_error(olm_account_last_error(this));
         }
-    }
-    else{
-
+    } else {
         size = olm_create_account_random_length(this);
 
         if(olm_create_account(this, RSTRING_PTR(get_random(size)), size) == olm_error()){
-
             raise_olm_error(olm_account_last_error(this));
         }
     }

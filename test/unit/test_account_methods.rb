@@ -25,10 +25,6 @@ class TestAccount < Minitest::Test
     assert_equal OlmError::SUCCESS, @state.last_error
   end
 
-  def test_sign
-    assert_instance_of String, @state.sign("hello")
-  end
-
   def test_mark_keys_as_published
     assert_equal @state, @state.mark_keys_as_published
   end
