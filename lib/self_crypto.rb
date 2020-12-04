@@ -1,3 +1,5 @@
+# Copyright 2020 Self Group Ltd. All Rights Reserved.
+
 require 'self_crypto/version'
 require 'self_crypto/self_crypto'
 require 'self_crypto/account'

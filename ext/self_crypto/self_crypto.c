@@ -1,3 +1,5 @@
+// Copyright 2020 Self Group Ltd. All Rights Reserved.
+
 #include <ruby.h>
 #include <assert.h>
 #include <stdbool.h>
