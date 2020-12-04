@@ -1,3 +1,5 @@
+# Copyright 2020 Self Group Ltd. All Rights Reserved.
+
 require 'minitest/autorun'
 require 'minitest/reporters'
 require 'self_crypto'

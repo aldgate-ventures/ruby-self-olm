@@ -1,3 +1,5 @@
+// Copyright 2020 Self Group Ltd. All Rights Reserved.
+
 #include "self_olm/pk.h"
 #include "self_crypto.h"
 

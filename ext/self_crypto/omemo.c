@@ -1,3 +1,5 @@
+// Copyright 2020 Self Group Ltd. All Rights Reserved.
+
 #include "sodium.h"
 #include "self_olm/olm.h"
 #include "self_omemo.h"
