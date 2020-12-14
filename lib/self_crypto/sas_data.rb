@@ -1,5 +1,3 @@
-# Copyright 2020 Self Group Ltd. All Rights Reserved.
-
 # encoding: UTF-8
 # frozen_string_literal: true
 
