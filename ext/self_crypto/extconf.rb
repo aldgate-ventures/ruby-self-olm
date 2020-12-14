@@ -1,5 +1,3 @@
-# Copyright 2020 Self Group Ltd. All Rights Reserved.
-
 require 'mkmf'
 
 $CFLAGS = " -std=c99"

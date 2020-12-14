@@ -1,5 +1,3 @@
-// Copyright 2020 Self Group Ltd. All Rights Reserved.
-
 #ifndef SELF_CRYPTO_H
 #define SELF_CRYPTO_H
 

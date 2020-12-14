@@ -1,5 +1,3 @@
-# Copyright 2020 Self Group Ltd. All Rights Reserved.
-
 require_relative './sas_data'
 
 class SelfCrypto::SAS
