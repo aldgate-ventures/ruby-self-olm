@@ -1,6 +1,8 @@
 ruby-self-olm
 ========
 
+![Build Status](https://github.com/joinself/self-crypto-ruby/actions/workflows/ci.yml/badge.svg?branch=master)
+
 Provides end to end group encryption using `self-olm`, a fork of [matrix](https://matrix.org/blog/home/)'s olm, and `self-omemo`
 
 The original wrapper was forked from [ruby_olm](github.com/14mRh4X0r/ruby_olm)
