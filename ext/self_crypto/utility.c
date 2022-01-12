@@ -24,6 +24,117 @@ static VALUE ed25519_verify(VALUE self, VALUE data, VALUE key, VALUE signature)
     return retval;
 }
 
+static VALUE random_bytes(VALUE self, VALUE size)
+{
+    void *nonce;
+
+    if((nonce = malloc(NUM2SIZET(size))) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    randombytes_buf(nonce, NUM2SIZET(size));
+
+    VALUE n = rb_str_new(nonce, NUM2SIZET(size));
+
+    free(nonce);
+
+    return n;
+}
+
+static VALUE aead_xchacha20poly1305_ietf_nonce(VALUE self)
+{
+    void *nonce;
+
+    if((nonce = malloc(crypto_aead_xchacha20poly1305_ietf_NPUBBYTES)) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    randombytes_buf(nonce, crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
+
+    VALUE n = rb_str_new(nonce, crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
+
+    free(nonce);
+
+    return n;
+}
+
+static VALUE aead_xchacha20poly1305_ietf_keygen(VALUE self)
+{
+    void *key;
+
+    if((key = malloc(crypto_aead_xchacha20poly1305_ietf_KEYBYTES)) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    crypto_aead_xchacha20poly1305_ietf_keygen(key);
+
+    VALUE k = rb_str_new(key, crypto_aead_xchacha20poly1305_ietf_KEYBYTES);
+
+    free(key);
+
+    return k;
+}
+
+static VALUE aead_xchacha20poly1305_ietf_encrypt(VALUE self, VALUE key, VALUE nonce, VALUE plaintext)
+{
+    void *ciphertext;
+    unsigned long long ciphertext_len;
+
+    if((ciphertext = malloc(RSTRING_LEN(plaintext) + crypto_aead_xchacha20poly1305_ietf_ABYTES)) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    crypto_aead_xchacha20poly1305_ietf_encrypt(
+        ciphertext,
+        &ciphertext_len,
+        RSTRING_PTR(plaintext),
+        RSTRING_LEN(plaintext),
+        NULL,
+        0,
+        NULL,
+        RSTRING_PTR(nonce),
+        RSTRING_PTR(key)
+    );
+
+    VALUE ct = rb_str_new(ciphertext, ciphertext_len);
+
+    free(ciphertext);
+
+    return ct;
+}
+
+static VALUE aead_xchacha20poly1305_ietf_decrypt(VALUE self, VALUE key, VALUE nonce, VALUE ciphertext)
+{
+    void *plaintext;
+    unsigned long long plaintext_len;
+
+    if((plaintext = malloc(RSTRING_LEN(ciphertext))) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    int status = crypto_aead_xchacha20poly1305_ietf_decrypt(
+        plaintext,
+        &plaintext_len,
+        NULL,
+        RSTRING_PTR(ciphertext),
+        RSTRING_LEN(ciphertext),
+        NULL,
+        0,
+        RSTRING_PTR(nonce),
+        RSTRING_PTR(key)
+    );
+
+    if (status != 0) {
+        rb_raise(rb_eStandardError, "could not authenticate encrypted message");
+    }
+
+    VALUE pt = rb_str_new(plaintext, plaintext_len);
+
+    free(plaintext);
+
+    return pt;
+}
+
 static VALUE ed25519_pk_to_curve25519(VALUE self, VALUE ed25519_pk)
 {
     VALUE curve25519_sk;
@@ -140,4 +251,9 @@ void utility_init(void)
     rb_define_method(cUtility, "sha256", sha256, 1);
     rb_define_method(cUtility, "ed25519_verify", ed25519_verify, 3);
     rb_define_module_function(cUtil, "ed25519_pk_to_curve25519", ed25519_pk_to_curve25519, 1);
+    rb_define_module_function(cUtil, "random_bytes", random_bytes, 1);
+    rb_define_module_function(cUtil, "aead_xchacha20poly1305_ietf_keygen", aead_xchacha20poly1305_ietf_keygen, 0);
+    rb_define_module_function(cUtil, "aead_xchacha20poly1305_ietf_nonce", aead_xchacha20poly1305_ietf_nonce, 0);
+    rb_define_module_function(cUtil, "aead_xchacha20poly1305_ietf_encrypt", aead_xchacha20poly1305_ietf_encrypt, 3);
+    rb_define_module_function(cUtil, "aead_xchacha20poly1305_ietf_decrypt", aead_xchacha20poly1305_ietf_decrypt, 3);
 }
