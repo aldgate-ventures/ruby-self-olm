@@ -26,6 +26,7 @@ jobs:
           gem install bundler
           gem install rake
           gem install minitest
+          gem install minitest-reporters
 
       - name: Build
         run: gem build self-crypto-ruby.gemspec
