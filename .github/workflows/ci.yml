@@ -22,7 +22,9 @@ jobs:
           apt-get -y install /tmp/libself-omemo_0.1.3_amd64.deb
 
       - name: Install dependencies
-        run: bundle install
+        run: |
+          gem install bundler
+          bundle install
 
       - name: Build
         run: gem build self-crypto-ruby.gemspec
@@ -31,4 +33,3 @@ jobs:
         run: |
           gem install self_crypto-*.gem -- --with-cflags=\"-std=c99\"
           cd gem_test
-          rake test
