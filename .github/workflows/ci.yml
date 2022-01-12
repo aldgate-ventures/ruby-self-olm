@@ -24,6 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           gem install bundler
+          gem install rake
           bundle install
 
       - name: Build
