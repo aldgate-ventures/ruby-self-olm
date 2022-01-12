@@ -24,6 +24,100 @@ static VALUE ed25519_verify(VALUE self, VALUE data, VALUE key, VALUE signature)
     return retval;
 }
 
+static VALUE random_bytes(VALUE self, VALUE size)
+{
+    void *nonce;
+
+    if((nonce = malloc(NUM2SIZET(size))) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    randombytes_buf(nonce, NUM2SIZET(size));
+
+    VALUE n = rb_str_new_cstr(nonce);
+
+    free(nonce);
+
+    return n;
+}
+
+static VALUE aead_xchacha20poly1305_ietf_keygen(VALUE self)
+{
+    void *key;
+
+    if((key = malloc(crypto_aead_xchacha20poly1305_ietf_KEYBYTES)) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    crypto_aead_xchacha20poly1305_ietf_keygen(key);
+
+    VALUE k = rb_str_new_cstr(key);
+
+    free(key);
+
+    return k;
+}
+
+static VALUE aead_xchacha20poly1305_ietf_encrypt(VALUE self, VALUE key, VALUE nonce, VALUE plaintext)
+{
+    void *ciphertext;
+    unsigned long long ciphertext_len;
+
+    if((ciphertext = malloc(RSTRING_LEN(plaintext) + crypto_aead_xchacha20poly1305_ietf_ABYTES)) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    crypto_aead_xchacha20poly1305_ietf_encrypt(
+        ciphertext,
+        &ciphertext_len,
+        RSTRING_PTR(plaintext),
+        RSTRING_LEN(plaintext),
+        NULL,
+        0,
+        NULL,
+        RSTRING_PTR(nonce),
+        RSTRING_PTR(key)
+    );
+
+    VALUE ct = rb_str_new_cstr(ciphertext);
+
+    free(ciphertext);
+
+    return ct;
+}
+
+static VALUE aead_xchacha20poly1305_ietf_decrypt(VALUE self, VALUE key, VALUE nonce, VALUE ciphertext)
+{
+    void *plaintext;
+    unsigned long long plaintext_len;
+
+    if((plaintext = malloc(RSTRING_LEN(ciphertext))) == NULL){
+        rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
+    }
+
+    int status = crypto_aead_xchacha20poly1305_ietf_decrypt(
+        plaintext,
+        &plaintext_len,
+        NULL,
+        RSTRING_PTR(ciphertext),
+        RSTRING_LEN(ciphertext),
+        NULL,
+        0,
+        RSTRING_PTR(nonce),
+        RSTRING_PTR(key)
+    );
+
+    if (status != 0) {
+        rb_raise(rb_eStandardError, "could not authenticate encrypted message");
+    }
+
+    VALUE pt = rb_str_new_cstr(plaintext);
+
+    free(plaintext);
+
+    return pt;
+}
+
 static VALUE ed25519_pk_to_curve25519(VALUE self, VALUE ed25519_pk)
 {
     VALUE curve25519_sk;
