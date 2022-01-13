@@ -28,6 +28,10 @@ static VALUE random_bytes(VALUE self, VALUE size)
 {
     void *nonce;
 
+    if(size != Qnil){
+        rb_raise(rb_eStandardError, "must specify a size");
+    }
+
     if((nonce = malloc(NUM2SIZET(size))) == NULL){
         rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
     }
@@ -80,6 +84,18 @@ static VALUE aead_xchacha20poly1305_ietf_encrypt(VALUE self, VALUE key, VALUE no
     void *ciphertext;
     unsigned long long ciphertext_len;
 
+    if(key != Qnil){
+        rb_raise(rb_eStandardError, "must specify a key");
+    }
+
+    if(nonce != Qnil){
+        rb_raise(rb_eStandardError, "must specify a nonce");
+    }
+
+    if(plaintext != Qnil){
+        rb_raise(rb_eStandardError, "must specify plaintext");
+    }
+
     if((ciphertext = malloc(RSTRING_LEN(plaintext) + crypto_aead_xchacha20poly1305_ietf_ABYTES)) == NULL){
         rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
     }
@@ -107,6 +123,18 @@ static VALUE aead_xchacha20poly1305_ietf_decrypt(VALUE self, VALUE key, VALUE no
 {
     void *plaintext;
     unsigned long long plaintext_len;
+
+    if(key != Qnil){
+        rb_raise(rb_eStandardError, "must specify a key");
+    }
+
+    if(nonce != Qnil){
+        rb_raise(rb_eStandardError, "must specify a nonce");
+    }
+
+    if(ciphertext != Qnil){
+        rb_raise(rb_eStandardError, "must specify ciphertext");
+    }
 
     if((plaintext = malloc(RSTRING_LEN(ciphertext))) == NULL){
         rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
