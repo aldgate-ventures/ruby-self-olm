@@ -28,7 +28,7 @@ static VALUE random_bytes(VALUE self, VALUE size)
 {
     void *nonce;
 
-    if(size != Qnil){
+    if(size == Qnil){
         rb_raise(rb_eStandardError, "must specify a size");
     }
 
@@ -84,15 +84,15 @@ static VALUE aead_xchacha20poly1305_ietf_encrypt(VALUE self, VALUE key, VALUE no
     void *ciphertext;
     unsigned long long ciphertext_len;
 
-    if(key != Qnil){
+    if(key == Qnil){
         rb_raise(rb_eStandardError, "must specify a key");
     }
 
-    if(nonce != Qnil){
+    if(nonce == Qnil){
         rb_raise(rb_eStandardError, "must specify a nonce");
     }
 
-    if(plaintext != Qnil){
+    if(plaintext == Qnil){
         rb_raise(rb_eStandardError, "must specify plaintext");
     }
 
@@ -124,15 +124,15 @@ static VALUE aead_xchacha20poly1305_ietf_decrypt(VALUE self, VALUE key, VALUE no
     void *plaintext;
     unsigned long long plaintext_len;
 
-    if(key != Qnil){
+    if(key == Qnil){
         rb_raise(rb_eStandardError, "must specify a key");
     }
 
-    if(nonce != Qnil){
+    if(nonce == Qnil){
         rb_raise(rb_eStandardError, "must specify a nonce");
     }
 
-    if(ciphertext != Qnil){
+    if(ciphertext == Qnil){
         rb_raise(rb_eStandardError, "must specify ciphertext");
     }
 
