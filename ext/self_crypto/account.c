@@ -1,4 +1,4 @@
-#include "self_omemo2.h"
+#include "self_omemo.h"
 #include "self_crypto.h"
 
 static VALUE last_error(VALUE self) {

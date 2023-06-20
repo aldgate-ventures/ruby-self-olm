@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "self_omemo2.h"
+#include "self_omemo.h"
 
 void account_init(void);
 void session_init(void);

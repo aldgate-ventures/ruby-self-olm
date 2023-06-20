@@ -1,6 +1,6 @@
 // Copyright 2020 Self Group Ltd. All Rights Reserved.
 
-#include "self_omemo2.h"
+#include "self_omemo.h"
 #include "self_crypto.h"
 
 static VALUE initialize(int argc, VALUE * argv, VALUE self) {
