@@ -9,8 +9,6 @@ module SelfCrypto
       Session.new(pickle, password)
     end
 
-    alias_method :has_received?, :has_received_message
-
   end
 
 end

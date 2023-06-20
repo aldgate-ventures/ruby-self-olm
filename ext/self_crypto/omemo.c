@@ -1,79 +1,74 @@
 // Copyright 2020 Self Group Ltd. All Rights Reserved.
 
-#include "sodium.h"
-#include "self_olm/olm.h"
 #include "self_omemo.h"
 #include "self_crypto.h"
 
-static VALUE initialize(int argc, VALUE *argv, VALUE self)
-{
+static VALUE initialize(int argc, VALUE * argv, VALUE self) {
     VALUE identity;
-    GroupSession *this;
+    GroupSession * this;
 
     Data_Get_Struct(self, GroupSession, this);
 
-    (void)rb_scan_args(argc, argv, "1", &identity);
+    (void) rb_scan_args(argc, argv, "1", & identity);
 
-    if(identity != Qnil){
-        if(rb_obj_is_kind_of(identity, rb_cString) != Qtrue){
+    if (identity != Qnil) {
+        if (rb_obj_is_kind_of(identity, rb_cString) != Qtrue) {
             rb_raise(rb_eTypeError, "identity must be kind of String");
         }
     }
 
-    omemo_set_identity(this, RSTRING_PTR(identity));
+    self_omemo_set_identity(this, RSTRING_PTR(identity));
 
     return self;
 }
 
-static VALUE add_participant(VALUE self, VALUE identity, VALUE session)
-{
-    GroupSession *this;
-    OlmSession *s;
+static VALUE add_participant(VALUE self, VALUE identity, VALUE session) {
+    GroupSession * this;
+    OlmSession * s;
 
     Data_Get_Struct(self, GroupSession, this);
     Data_Get_Struct(session, OlmSession, s);
 
-    if(rb_obj_is_kind_of(identity, rb_eval_string("String")) != Qtrue){
+    if (rb_obj_is_kind_of(identity, rb_eval_string("String")) != Qtrue) {
         rb_raise(rb_eTypeError, "identity must be kind of String");
     }
 
-    if(
-       rb_obj_is_instance_of(session, rb_eval_string("SelfCrypto::Session")) != Qtrue &&
-       rb_obj_is_instance_of(session, rb_eval_string("SelfCrypto::InboundSession")) != Qtrue &&
-       rb_obj_is_instance_of(session, rb_eval_string("SelfCrypto::OutboundSession")) != Qtrue
-     ){
+    if (
+        rb_obj_is_instance_of(session, rb_eval_string("SelfCrypto::Session")) != Qtrue &&
+        rb_obj_is_instance_of(session, rb_eval_string("SelfCrypto::InboundSession")) != Qtrue &&
+        rb_obj_is_instance_of(session, rb_eval_string("SelfCrypto::OutboundSession")) != Qtrue
+    ) {
         rb_raise(rb_eTypeError, "session must be an instance of SelfCrypto::Session, SelfCrypto::InboundSession or SelfCrypto::OutboundSession");
     }
 
-    omemo_add_group_participant(this, RSTRING_PTR(identity), s);
+    self_omemo_add_group_participant(this, RSTRING_PTR(identity), s);
 
     return identity;
 }
 
-static VALUE group_encrypt(VALUE self, VALUE plaintext)
-{
-    GroupSession *this;
+static VALUE group_encrypt(VALUE self, VALUE plaintext) {
+    GroupSession * this;
     VALUE ciphertext;
-    void *ptr;
+    void * ptr;
     size_t ciphertext_sz;
 
     Data_Get_Struct(self, GroupSession, this);
 
-    if(rb_obj_is_kind_of(plaintext, rb_eval_string("String")) != Qtrue){
+    if (rb_obj_is_kind_of(plaintext, rb_eval_string("String")) != Qtrue) {
         rb_raise(rb_eTypeError, "plaintext must be kind of String");
     }
 
-    ciphertext_sz = omemo_encrypted_size(this, RSTRING_LEN(plaintext));
+    ciphertext_sz = self_omemo_encrypted_size(this, RSTRING_LEN(plaintext));
 
     if (ciphertext_sz == 0) {
         rb_raise(rb_eTypeError, "could not get size of encrypted message");
     }
 
-    if((ptr = malloc(ciphertext_sz)) == NULL){
+    if ((ptr = malloc(ciphertext_sz)) == NULL) {
         rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
     }
 
-    ciphertext_sz = omemo_encrypt(
+    ciphertext_sz = self_omemo_encrypt(
         this,
         RSTRING_PTR(plaintext),
         RSTRING_LEN(plaintext),
@@ -81,7 +76,7 @@ static VALUE group_encrypt(VALUE self, VALUE plaintext)
         ciphertext_sz
     );
 
-    if(ciphertext_sz == 0) {
+    if (ciphertext_sz == 0) {
         free(ptr);
         rb_raise(rb_eTypeError, "failed to encrypt");
     }
@@ -93,34 +88,33 @@ static VALUE group_encrypt(VALUE self, VALUE plaintext)
     return ciphertext;
 }
 
-static VALUE group_decrypt(VALUE self, VALUE sender, VALUE ciphertext)
-{
-    GroupSession *this;
+static VALUE group_decrypt(VALUE self, VALUE sender, VALUE ciphertext) {
+    GroupSession * this;
     VALUE plaintext;
-    void *ptr;
+    void * ptr;
     size_t plaintext_sz;
 
     Data_Get_Struct(self, GroupSession, this);
 
-    if(rb_obj_is_kind_of(sender, rb_eval_string("String")) != Qtrue){
+    if (rb_obj_is_kind_of(sender, rb_eval_string("String")) != Qtrue) {
         rb_raise(rb_eTypeError, "sender must be kind of String");
     }
 
-    if(rb_obj_is_kind_of(ciphertext, rb_eval_string("String")) != Qtrue){
+    if (rb_obj_is_kind_of(ciphertext, rb_eval_string("String")) != Qtrue) {
         rb_raise(rb_eTypeError, "ciphertext must be kind of String");
     }
 
-    plaintext_sz = omemo_decrypted_size(this, RSTRING_PTR(ciphertext), RSTRING_LEN(ciphertext));
+    plaintext_sz = self_omemo_decrypted_size(this, RSTRING_PTR(ciphertext), RSTRING_LEN(ciphertext));
 
     if (plaintext_sz == 0) {
         rb_raise(rb_eTypeError, "could not get size of decrypted message");
     }
 
-    if((ptr = malloc(plaintext_sz)) == NULL){
+    if ((ptr = malloc(plaintext_sz)) == NULL) {
         rb_raise(rb_eNoMemError, "%s()", __FUNCTION__);
     }
 
-    plaintext_sz = omemo_decrypt(
+    plaintext_sz = self_omemo_decrypt(
         this,
         RSTRING_PTR(sender),
         ptr,
@@ -129,7 +123,7 @@ static VALUE group_decrypt(VALUE self, VALUE sender, VALUE ciphertext)
         RSTRING_LEN(ciphertext)
     );
 
-    if(plaintext_sz == 0) {
+    if (plaintext_sz == 0) {
         free(ptr);
         rb_raise(rb_eTypeError, "failed to decrypt");
     }
@@ -141,25 +135,22 @@ static VALUE group_decrypt(VALUE self, VALUE sender, VALUE ciphertext)
     return plaintext;
 }
 
-static void _free(void *ptr)
-{
-    omemo_destroy_group_session(ptr);
+static void _free(void * ptr) {
+    self_omemo_destroy_group_session(ptr);
 }
 
-static VALUE _alloc(VALUE klass)
-{
-    GroupSession *this;
+static VALUE _alloc(VALUE klass) {
+    GroupSession * this;
     VALUE self;
 
-    self = Data_Wrap_Struct(klass, 0, _free, omemo_create_group_session());
+    self = Data_Wrap_Struct(klass, 0, _free, self_omemo_create_group_session());
 
     Data_Get_Struct(self, GroupSession, this);
 
     return self;
 }
 
-void group_session_init()
-{
+void group_session_init() {
     VALUE cRubyOLM = rb_define_module("SelfCrypto");
     VALUE cGroupSession = rb_define_class_under(cRubyOLM, "GroupSession", rb_cObject);
 
