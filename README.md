@@ -1,4 +1,4 @@
-ruby-self-olm
+self-crypto-ruby
 ========
 
 ![Build Status](https://github.com/joinself/self-crypto-ruby/actions/workflows/ci.yml/badge.svg?branch=master)
