@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Setup job
         uses: joinself/github-actions/setup-job@main
+        with:
+          gh-token: ${{ secrets.GH_TOKEN }}
       - name: License check
         shell: bash
         run: |
