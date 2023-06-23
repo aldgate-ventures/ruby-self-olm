@@ -1,0 +1,28 @@
+name: _license-compliance
+
+on:
+  workflow_call:
+
+jobs:
+  license-compliance:
+    runs-on: [self-hosted, linux-docker]
+    container:
+      image: eu.gcr.io/principal-oxide-204416/license-finder:ruby-2.7.3
+      credentials:
+        username: ${{ secrets.CONTAINER_REGISTRY_USER }}
+        password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+    steps:
+      - name: Setup job
+        uses: joinself/github-actions/setup-job@main
+      - name: License check
+        shell: bash
+        run: |
+          . ${GITHUB_WORKSPACE}/.ci/env
+          bundle install
+          curl -Lo /tmp/dependency_decisions.yml https://static.joinself.com/license-finder/dependency_decisions.yml
+          license_finder --decisions_file /tmp/dependency_decisions.yml
+      - name: Failure notification
+        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        uses: joinself/github-actions/failure-notification@main
+        with:
+          slack-webhook: ${{ secrets.SLACK_WEBHOOK_CI_ALERTS }}
