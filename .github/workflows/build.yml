@@ -18,9 +18,9 @@ jobs:
         run: |
           curl -Lo self-omemo.deb https://github.com/joinself/self-omemo/releases/download/0.4.0/self-omemo_0.4.0_amd64.deb
           dpkg -i ./self-omemo.deb
-          #gem install minitest minitest-reporters
           gem build self-crypto-ruby.gemspec
           gem install self_crypto-*.gem -- --with-cflags=\"-std=c99\"
+          gem install minitest minitest-reporters
           cd gem_test
           rake test
       - name: Upload artifacts
