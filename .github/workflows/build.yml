@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Setup job
         uses: joinself/github-actions/setup-job@main
+        with:
+          gh-token: ${{ secrets.GH_TOKEN }}
       - name: Build
         shell: bash
         run: |
