@@ -1,0 +1,36 @@
+name: _build
+
+on:
+  workflow_call:
+  
+jobs:
+  build:
+    runs-on: [self-hosted, linux-docker]
+    container:
+      image: ruby:2.7.3-buster
+    steps:
+      - name: Setup job
+        uses: joinself/github-actions/setup-job@main
+        with:
+          gh-token: ${{ secrets.GH_TOKEN }}
+      - name: Build
+        shell: bash
+        run: |
+          curl -Lo self-omemo.deb https://github.com/joinself/self-omemo/releases/download/0.4.0/self-omemo_0.4.0_amd64.deb
+          dpkg -i ./self-omemo.deb
+          gem build self-crypto-ruby.gemspec
+          gem install self_crypto-*.gem -- --with-cflags=\"-std=c99\"
+          gem install minitest minitest-reporters
+          cd gem_test
+          rake test
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: ./*.gem
+          retention-days: 1
+      - name: Failure notification
+        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        uses: joinself/github-actions/failure-notification@main
+        with:
+          slack-webhook: ${{ secrets.SLACK_WEBHOOK_CI_ALERTS }}
