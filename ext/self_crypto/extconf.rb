@@ -1,6 +1,7 @@
 require 'mkmf'
 
-$CFLAGS = " -std=c99"
+$CFLAGS = "-fPIC -std=c99"
+$LDFLAGS = " -no-pie -shared " + $LDFLAGS
 
 RbConfig::MAKEFILE_CONFIG['CC'] = ENV['CC'] if ENV['CC']
 
