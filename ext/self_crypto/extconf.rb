@@ -1,7 +1,14 @@
 require 'mkmf'
 
+
 $CFLAGS = "-fPIC -std=c99"
-$LDFLAGS = " -no-pie -shared " + $LDFLAGS
+
+if Gem::Platform.local.os == "darwin"
+  $LDFLAGS = " -no-pie " + $LDFLAGS
+else
+  $LDFLAGS = " -no-pie -shared " + $LDFLAGS
+end
+
 
 RbConfig::MAKEFILE_CONFIG['CC'] = ENV['CC'] if ENV['CC']
 
