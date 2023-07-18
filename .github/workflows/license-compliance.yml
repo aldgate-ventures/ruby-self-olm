@@ -5,17 +5,12 @@ on:
 
 jobs:
   license-compliance:
-    runs-on: [self-hosted, linux-docker]
+    runs-on: ubuntu-latest
     container:
-      image: eu.gcr.io/principal-oxide-204416/license-finder:ruby-2.7.3
-      credentials:
-        username: ${{ secrets.CONTAINER_REGISTRY_USER }}
-        password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+      image: joinself/license-finder:ruby-2.7.3
     steps:
       - name: Setup job
-        uses: joinself/github-actions/setup-job@main
-        with:
-          gh-token: ${{ secrets.GH_TOKEN }}
+        uses: joinself/github-actions-public/setup-job@main
       - name: License check
         shell: bash
         run: |
@@ -25,6 +20,6 @@ jobs:
           license_finder --decisions_file /tmp/dependency_decisions.yml
       - name: Failure notification
         if: ${{ github.ref == 'refs/heads/main' && failure() }}
-        uses: joinself/github-actions/failure-notification@main
+        uses: joinself/github-actions-public/failure-notification@main
         with:
           slack-webhook: ${{ secrets.SLACK_WEBHOOK_CI_ALERTS }}
