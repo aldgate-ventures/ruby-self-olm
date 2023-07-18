@@ -1,44 +1,39 @@
-self-crypto-ruby
-========
+# Self Crypto Ruby
 
-![Build Status](https://github.com/joinself/self-crypto-ruby/actions/workflows/ci.yml/badge.svg?branch=master)
+![Build Status](https://github.com/joinself/self-crypto-ruby/actions/workflows/ci.yml/badge.svg?branch=main)
 
-Provides end to end group encryption using `self-olm`, a fork of [matrix](https://matrix.org/blog/home/)'s olm, and `self-omemo`
-
-The original wrapper was forked from [ruby_olm](github.com/14mRh4X0r/ruby_olm)
+Provides end to end group encryption using `self-olm` and `self-omemo`
 
 ## Installation
 
-This gem requires selfs fork of olm (self-olm) and omemo (self-omemo) to be available before installing this gem.
+This gem requires Self's fork of OLM (self-olm) and OMEMO (self-omemo) to be available before installing.
 
-The gem name is 'self_crypto'. The target
-needs to be able to build native extensions.
+The gem name is 'self_crypto'. The target needs to be able to build native extensions.
 
 Once installed, require as:
 
-~~~ ruby
+```ruby
 require 'self_crypto'
-~~~
+```
 
-If using locally (i.e. you check out this repository) you may
-need to manually compile and clean the extensions like this:
+If using locally (i.e. you check out this repository) you may need to manually compile and clean the extensions like this:
 
-~~~ console
+```bash
 bundle exec rake compile
 bundle exec rake clean
-~~~
+```
 
 ## Characteristics
 
 - Interfaces are not thread safe
-- Olm always encodes binary as base64
+- OLM always encodes binary as base64
 - Account is unlikely to scale for a large number of one-time-keys
 
 ## Example
 
 Setup alice's account:
 
-~~~ruby
+```ruby
 require 'file'
 require 'self_crypto'
 
@@ -65,19 +60,18 @@ else
   # 1b-v) store the account to a file
   File.write('account.pickle', alice.to_pickle(STORAGE_KEY))
 end
-
-~~~
+```
 
 Send a message from alice to bob:
 
-~~~ruby
+```ruby
 # Send a message to bob:1
 
 if File.exist?('bob:1-session.pickle')
   # 2a) if bob's session file exists load the pickle from the file
   session_with_bob = Session.from_pickle(File.read('bob:1-session.pickle'), STORAGE_KEY)
 else
-  # 2b-i) if you have not previously sent or recevied a message to/from bob,
+  # 2b-i) if you have not previously sent or received a message to/from bob,
   #       you must get his identity key from GET /v1/identities/bob/
   ed25519_identity_key = JSON.parse(get('/v1/identities/bob/public_keys/')).first['key']
 
@@ -105,12 +99,11 @@ ct = ags.encrypt('hello')
 
 # 6) do something with the message
 puts ct.to_s
-
-~~~
+```
 
 Receive a message from carol:
 
-~~~ruby
+```ruby
 # Receive a message from carol:1
 
 ct = "json encoded group message..."
@@ -142,14 +135,13 @@ pt = bgs.decrypt("alice:1", ct)
 
 # 11) do something with the message
 puts ct.to_s
-
-~~~
+```
 
 ## Running Tests
 
-~~~ console
+```bash
 bundle exec rake test
-~~~
+```
 
 ## What is an Olm?
 
